@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 interface FormData {
   username: string;
@@ -8,8 +9,7 @@ interface FormData {
   password: string;
   gender: 'Male' | 'Female' | 'Other' | '';
   dateOfBirth: string;
-  location?: string;
-  bio?: string;
+  
 }
 
 const SignUp = () => {
@@ -19,20 +19,19 @@ const SignUp = () => {
     password: '',
     gender: '',
     dateOfBirth: '',
-    location: '',
-    bio: '',
+   
   });
 
   const [errors, setErrors] = useState<any>({});
   const [isClient, setIsClient] = useState(false);
+  const [loading, setLoading] = useState(false); // Loader state
+  const [popup, setPopup] = useState<{ message: string; type: 'success' | 'error' } | null>(null); // Popup state
   const router = useRouter();
 
   useEffect(() => {
-    // Ensures this code runs only on the client-side
     setIsClient(true);
   }, []);
 
-  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -41,7 +40,6 @@ const SignUp = () => {
     }));
   };
 
-  // Form validation
   const validateForm = () => {
     const newErrors: any = {};
     if (!formData.username) newErrors.username = 'Username is required';
@@ -52,16 +50,34 @@ const SignUp = () => {
     return newErrors;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const showPopup = (message: string, type: 'success' | 'error') => {
+    setPopup({ message, type });
+    setTimeout(() => setPopup(null), 3000); // Hide popup after 3 seconds
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
-      // Submit data (to API or backend)
-      console.log('Form submitted', formData);
-      // Redirect to home page or dashboard only if on client-side
-      if (isClient) {
-        router.push('/');
+      setLoading(true); // Start loader
+      try {
+        // Make API call using axios
+        const response = await axios.post('/api/signup', formData);
+
+        // Simulate a successful response
+        if (response.status === 200) {
+          showPopup('Account created successfully!', 'success');
+          if (isClient) {
+            router.push(`/verification/${formData.email}`); // Redirect to verification page after successful signup
+          }
+        } else {
+          showPopup('Something went wrong. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Error during signup:', error);
+        showPopup('Failed to create account. Please try again.', 'error');
+      } finally {
+        setLoading(false); // End loader
       }
     } else {
       setErrors(validationErrors);
@@ -186,7 +202,7 @@ const SignUp = () => {
               type="submit"
               className="w-full p-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 focus:outline-none"
             >
-              Sign Up
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </div>
 
@@ -194,11 +210,20 @@ const SignUp = () => {
           <div className="text-center text-sm text-gray-600">
             Already have an account?{' '}
             <a href="/login" className="text-pink-500 hover:underline">
-              Log In
+              Login here
             </a>
           </div>
         </form>
       </div>
+
+      {/* Popup */}
+      {popup && (
+        <div
+          className={`fixed bottom-5 left-1/2 transform -translate-x-1/2 ${popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white p-4 rounded-md shadow-lg`}
+        >
+          <p>{popup.message}</p>
+        </div>
+      )}
     </div>
   );
 };

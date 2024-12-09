@@ -36,12 +36,21 @@ const userSchema = new mongoose.Schema<UserDocument>(
     bio: { type: String, maxlength: 500 },
     interests: { type: [String] },
     preferences: {
-      gender: { type: [String], enum: ['Male', 'Female', 'Other'] },
-      ageRange: {
-        type: [Number],
-        validate: (val: number[]) => val.length === 2,
-      },
-      maxDistance: { type: Number },
+      type: new mongoose.Schema(
+        {
+          gender: { type: [String], enum: ['Male', 'Female', 'Other'], required: false },
+          ageRange: {
+            type: [Number],
+            validate: {
+              validator: (val: number[]) => val.length === 2 && val[0] < val[1],
+              message: 'Age range must contain two numbers, with the first being smaller than the second.',
+            },
+            required: false,
+          },
+          maxDistance: { type: Number, required: false },
+        },
+        { _id: false } // Prevents an additional _id field for the preferences sub-document
+      ),
     },
     profilePicture: { type: String },
     matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
