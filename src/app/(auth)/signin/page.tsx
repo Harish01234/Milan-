@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+// Interfaces for typing
 interface LoginData {
   identifier: string; // Can be either username or email
   password: string;
@@ -13,23 +14,24 @@ interface Popup {
   message: string;
 }
 
+// Main Login Page Component
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginData>({
     identifier: '',
     password: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isClient, setIsClient] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [popup, setPopup] = useState<Popup | null>(null); // Popup state
+  const [errors, setErrors] = useState<Record<string, string>>({}); // State for form errors
+  const [isClient, setIsClient] = useState<boolean>(false); // Ensure this is client-rendered
+  const [loading, setLoading] = useState<boolean>(false); // Loader state
+  const [popup, setPopup] = useState<Popup | null>(null); // Popup notifications
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
+    setIsClient(true); // Enable rendering on the client side
   }, []);
 
-  // Handle input changes
+  // Handle user input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setLoginData((prevData) => ({
@@ -38,7 +40,7 @@ const Login: React.FC = () => {
     }));
   };
 
-  // Form validation
+  // Validate the form before submission
   const validateForm = (): Record<string, string> => {
     const newErrors: Record<string, string> = {};
     if (!loginData.identifier) newErrors.identifier = 'Username or Email is required';
@@ -46,35 +48,33 @@ const Login: React.FC = () => {
     return newErrors;
   };
 
-  // Handle form submission with axios
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
-        // Submit data to the API using axios
         const response = await axios.post('/api/signin', loginData);
 
         if (response.status === 200) {
-          // Show success popup
           setPopup({ type: 'success', message: 'Login successful!' });
           setTimeout(() => {
-            setPopup(null); // Hide popup after 2 seconds
-            router.push('/dashboard'); // Redirect to the dashboard
+            setPopup(null);
+            router.push('/dashboard');
           }, 2000);
         }
       } catch (error: any) {
-        setLoading(false); // Stop loading
+        setLoading(false);
         if (error.response) {
-          // Handle server-side error
           setPopup({ type: 'error', message: error.response.data.error });
-          setTimeout(() => setPopup(null), 2000);
         } else {
-          // Handle network or unexpected error
-          setPopup({ type: 'error', message: 'An unexpected error occurred. Please try again.' });
-          setTimeout(() => setPopup(null), 2000);
+          setPopup({
+            type: 'error',
+            message: 'An unexpected error occurred. Please try again later.',
+          });
         }
+        setTimeout(() => setPopup(null), 2000);
       }
     } else {
       setErrors(validationErrors);
@@ -82,15 +82,15 @@ const Login: React.FC = () => {
   };
 
   if (!isClient) {
-    return null; // Optionally render a loader or null until the client-side renders
+    return null; // Return null until we ensure this is a client-side render
   }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-200 to-red-300">
       <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full sm:w-96">
         <h2 className="text-4xl font-extrabold text-center text-pink-600 mb-8">Welcome Back ❤️</h2>
-        
-        {/* Popup Message */}
+
+        {/* Popup Notification */}
         {popup && (
           <div
             className={`fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-center text-sm font-semibold shadow-xl animate-fade-in-out transition-all duration-300 ${
@@ -101,15 +101,16 @@ const Login: React.FC = () => {
           </div>
         )}
 
-        {/* Loader */}
+        {/* Loader Animation */}
         {loading && (
           <div className="absolute inset-0 flex justify-center items-center bg-opacity-50 bg-gray-700">
             <div className="border-t-4 border-pink-400 border-solid w-12 h-12 rounded-full animate-spin"></div>
           </div>
         )}
 
+        {/* Form Section */}
         <form onSubmit={handleSubmit} className="space-y-8 relative">
-          {/* Username or Email */}
+          {/* Username/Email Field */}
           <div className="relative">
             <input
               type="text"
@@ -129,7 +130,7 @@ const Login: React.FC = () => {
             {errors.identifier && <p className="text-red-500 text-xs mt-1">{errors.identifier}</p>}
           </div>
 
-          {/* Password */}
+          {/* Password Field */}
           <div className="relative">
             <input
               type="password"
@@ -154,13 +155,13 @@ const Login: React.FC = () => {
             <button
               type="submit"
               className="w-full p-3 bg-gradient-to-r from-pink-500 to-red-400 text-white font-bold rounded-lg hover:from-red-400 hover:to-pink-500 focus:outline-none shadow-lg transition-transform transform hover:-translate-y-1"
-              disabled={loading} // Disable button while loading
+              disabled={loading}
             >
               Log In
             </button>
           </div>
 
-          {/* Don't have an account */}
+          {/* Signup redirect */}
           <div className="text-center text-sm text-gray-600">
             Don&apos;t have an account?{' '}
             <a href="/signup" className="text-pink-500 hover:underline">
