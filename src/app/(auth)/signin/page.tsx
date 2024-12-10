@@ -43,9 +43,14 @@ const Login: React.FC = () => {
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length === 0) {
+      console.time('Login Request'); // Start timing the request
       try {
+        console.time('API Call'); // Start timing the API call
         const response = await axios.post('/api/signin', loginData);
+        console.timeEnd('API Call'); // End timing the API call
+
         if (response.status === 200) {
+          console.log('Login successful!');
           router.push('/dashboard');
         }
       } catch (error: any) {
@@ -54,6 +59,8 @@ const Login: React.FC = () => {
         } else {
           alert('Network error. Please try again later.');
         }
+      } finally {
+        console.timeEnd('Login Request'); // End timing the request
       }
     } else {
       setErrors(validationErrors);
