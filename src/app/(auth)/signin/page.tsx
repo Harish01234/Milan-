@@ -3,35 +3,25 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-// Interfaces for typing
 interface LoginData {
-  identifier: string; // Can be either username or email
+  identifier: string;
   password: string;
 }
 
-interface Popup {
-  type: 'success' | 'error';
-  message: string;
-}
-
-// Main Login Page Component
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginData>({
     identifier: '',
     password: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({}); // State for form errors
-  const [isClient, setIsClient] = useState<boolean>(false); // Ensure this is client-rendered
-  const [loading, setLoading] = useState<boolean>(false); // Loader state
-  const [popup, setPopup] = useState<Popup | null>(null); // Popup notifications
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isClient, setIsClient] = useState(false); // To ensure client-side rendering
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true); // Ensure the component is client-side rendered
+    setIsClient(true); // Update to true after the component mounts
   }, []);
 
-  // Handle user input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setLoginData((prevData) => ({
@@ -40,7 +30,6 @@ const Login: React.FC = () => {
     }));
   };
 
-  // Validate the form before submission
   const validateForm = (): Record<string, string> => {
     const newErrors: Record<string, string> = {};
     if (!loginData.identifier) newErrors.identifier = 'Username or Email is required';
@@ -48,123 +37,66 @@ const Login: React.FC = () => {
     return newErrors;
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    setErrors({}); // Clear previous errors
+    setErrors({});
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length === 0) {
-      setLoading(true); // Start loading
       try {
         const response = await axios.post('/api/signin', loginData);
-
         if (response.status === 200) {
-          setPopup({ type: 'success', message: 'Login successful!' });
-          setTimeout(() => {
-            setPopup(null);
-            router.push('/dashboard'); // Redirect to the dashboard
-          }, 2000);
+          router.push('/dashboard');
         }
       } catch (error: any) {
-        setLoading(false);
         if (error.response) {
-          // Display server-side error messages
-          setPopup({ type: 'error', message: error.response.data.error || 'Login failed!' });
+          alert(error.response.data.error || 'Login failed!');
         } else {
-          setPopup({
-            type: 'error',
-            message: 'Network error. Please try again later.',
-          });
+          alert('Network error. Please try again later.');
         }
-        setTimeout(() => setPopup(null), 3000); // Hide popup after 3 seconds
-      } finally {
-        setLoading(false); // Stop loading in case of any errors
       }
     } else {
       setErrors(validationErrors);
     }
   };
 
-  if (!isClient) return null; // Render nothing on the server side
+  if (!isClient) return null; // Ensure nothing is rendered on the server
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-200 to-red-300">
-      <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full sm:w-96">
-        <h2 className="text-4xl font-extrabold text-center text-pink-600 mb-8">Welcome Back ❤️</h2>
-
-        {/* Popup Notification */}
-        {popup && (
-          <div
-            className={`fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-center text-sm font-semibold shadow-xl transition-all duration-300 ${
-              popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-            }`}
-          >
-            {popup.message}
-          </div>
-        )}
-
-        {/* Loader Animation */}
-        {loading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-opacity-50 bg-gray-700">
-            <div className="border-t-4 border-pink-400 border-solid w-12 h-12 rounded-full animate-spin"></div>
-          </div>
-        )}
-
-        {/* Form Section */}
-        <form onSubmit={handleSubmit} className="space-y-8 relative">
-          {/* Username/Email Field */}
-          <div className="relative">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full sm:w-96">
+        <h2 className="text-3xl font-bold text-center text-pink-600 mb-6">Welcome Back ❤️</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
             <input
               type="text"
               name="identifier"
               value={loginData.identifier}
               onChange={handleChange}
-              className="peer w-full p-4 border-2 border-pink-300 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-gray-800 placeholder-transparent"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-pink-500"
               placeholder="Username or Email"
-              required
             />
-            <label
-              htmlFor="identifier"
-              className="absolute left-4 top-0 text-gray-500 text-sm transition-all duration-300 peer-placeholder-shown:top-4 peer-placeholder-shown:text-pink-400 peer-focus:top-0 peer-focus:text-pink-500"
-            >
-              Username or Email
-            </label>
             {errors.identifier && <p className="text-red-500 text-xs mt-1">{errors.identifier}</p>}
           </div>
-
-          {/* Password Field */}
-          <div className="relative">
+          <div>
             <input
               type="password"
               name="password"
               value={loginData.password}
               onChange={handleChange}
-              className="peer w-full p-4 border-2 border-pink-300 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-gray-800 placeholder-transparent"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-pink-500"
               placeholder="Password"
-              required
             />
-            <label
-              htmlFor="password"
-              className="absolute left-4 top-0 text-gray-500 text-sm transition-all duration-300 peer-placeholder-shown:top-4 peer-placeholder-shown:text-pink-400 peer-focus:top-0 peer-focus:text-pink-500"
-            >
-              Password
-            </label>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
-
-          {/* Submit Button */}
           <div>
             <button
               type="submit"
-              className="w-full p-3 bg-gradient-to-r from-pink-500 to-red-400 text-white font-bold rounded-lg hover:from-red-400 hover:to-pink-500 focus:outline-none shadow-lg transition-transform transform hover:-translate-y-1"
-              disabled={loading}
+              className="w-full p-3 bg-pink-500 text-white font-bold rounded-lg hover:bg-pink-600"
             >
               Log In
             </button>
           </div>
-
-          {/* Signup redirect */}
           <div className="text-center text-sm text-gray-600">
             Don&apos;t have an account?{' '}
             <a href="/signup" className="text-pink-500 hover:underline">
