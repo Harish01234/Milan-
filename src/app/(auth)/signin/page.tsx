@@ -28,7 +28,7 @@ const Login: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true); // Enable rendering on the client side
+    setIsClient(true); // Ensure the component is client-side rendered
   }, []);
 
   // Handle user input changes
@@ -51,9 +51,11 @@ const Login: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setErrors({}); // Clear previous errors
     const validationErrors = validateForm();
+
     if (Object.keys(validationErrors).length === 0) {
-      setLoading(true);
+      setLoading(true); // Start loading
       try {
         const response = await axios.post('/api/signin', loginData);
 
@@ -61,29 +63,30 @@ const Login: React.FC = () => {
           setPopup({ type: 'success', message: 'Login successful!' });
           setTimeout(() => {
             setPopup(null);
-            router.push('/dashboard');
+            router.push('/dashboard'); // Redirect to the dashboard
           }, 2000);
         }
       } catch (error: any) {
         setLoading(false);
         if (error.response) {
-          setPopup({ type: 'error', message: error.response.data.error });
+          // Display server-side error messages
+          setPopup({ type: 'error', message: error.response.data.error || 'Login failed!' });
         } else {
           setPopup({
             type: 'error',
-            message: 'An unexpected error occurred. Please try again later.',
+            message: 'Network error. Please try again later.',
           });
         }
-        setTimeout(() => setPopup(null), 2000);
+        setTimeout(() => setPopup(null), 3000); // Hide popup after 3 seconds
+      } finally {
+        setLoading(false); // Stop loading in case of any errors
       }
     } else {
       setErrors(validationErrors);
     }
   };
 
-  if (!isClient) {
-    return null; // Return null until we ensure this is a client-side render
-  }
+  if (!isClient) return null; // Render nothing on the server side
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-200 to-red-300">
@@ -93,7 +96,7 @@ const Login: React.FC = () => {
         {/* Popup Notification */}
         {popup && (
           <div
-            className={`fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-center text-sm font-semibold shadow-xl animate-fade-in-out transition-all duration-300 ${
+            className={`fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-center text-sm font-semibold shadow-xl transition-all duration-300 ${
               popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
             }`}
           >
@@ -175,14 +178,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
-/* Animations for popup */
-<style jsx>{`
-  @keyframes fade-in-out {
-    0%, 100% { opacity: 0; transform: translateY(-20px); }
-    50% { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in-out {
-    animation: fade-in-out 2s ease-in-out;
-  }
-`}</style>
