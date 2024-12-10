@@ -209,7 +209,7 @@ const SignUp = () => {
           {/* Already have an account */}
           <div className="text-center text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/login" className="text-pink-500 hover:underline">
+            <a href="/signin" className="text-pink-500 hover:underline">
               Login here
             </a>
           </div>

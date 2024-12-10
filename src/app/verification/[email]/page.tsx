@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'; // Correct hooks for Nex
 import axios from 'axios'; // Use axios for API requests
 import { BeatLoader } from 'react-spinners'; // Loader for UI feedback
 
+
 const VerificationPage = () => {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
@@ -50,6 +51,7 @@ const VerificationPage = () => {
 
       if (response.status === 200) {
         setMessage('Verification successful.');
+        router.push('/signin');
       } else {
         setMessage('Verification failed. Please try again.');
       }
