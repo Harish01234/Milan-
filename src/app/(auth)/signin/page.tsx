@@ -49,8 +49,16 @@ const Login: React.FC = () => {
         const response = await axios.post('/api/signin', loginData);
         console.timeEnd('API Call'); // End timing the API call
 
+        console.log('API Response:', response.data);
+        localStorage.setItem('username',response.data.user.username);
+    localStorage.setItem('email', response.data.user.email);
+    localStorage.setItem('gender', response.data.user.gender);
+
+
+
         if (response.status === 200) {
           console.log('Login successful!');
+          
           router.push('/dashboard');
         }
       } catch (error: any) {

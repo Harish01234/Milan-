@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log('User found:', user.username);
-
+    
     if (!user.verified) {
       console.log('User is not verified');
       return NextResponse.json(
@@ -78,6 +78,8 @@ export async function POST(request: NextRequest) {
     };
 
     const token = jwt.sign(tokenData, process.env.JWT_SECRET!, { expiresIn: '1d' });
+
+   
     console.timeEnd('JWT Token Generation'); // End JWT token generation timing
     console.log('JWT token generated successfully');
 
@@ -88,8 +90,12 @@ export async function POST(request: NextRequest) {
         id: user._id.toString(),
         email: user.email,
         username: user.username,
+        gender: user.gender,
       },
     });
+
+    console.log('Response prepared successfully', response);
+    
 
     // Set cookies
     console.time('Cookie Setting'); // Start timing cookie setting
