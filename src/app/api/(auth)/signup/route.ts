@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
       dateOfBirth: new Date(dateOfBirth),
       otp, // Store the OTP
       otpExpiry, // Store OTP expiry time
+      
     });
 
     await newUser.save();

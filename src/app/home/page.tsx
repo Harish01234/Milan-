@@ -29,7 +29,7 @@ export default function HomePage(): React.ReactElement {
       <header className="w-full py-4 px-6 flex justify-between items-center border-b border-pink-200">
         <h1 className="text-2xl font-bold text-pink-700">Milan (मिलन)</h1>
         <button
-          onClick={() => router.push("/login")}
+          onClick={() => router.push("/signin")}
           className="px-6 py-2 bg-pink-600 text-white font-medium rounded-full shadow hover:bg-pink-700"
         >
           Login
