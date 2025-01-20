@@ -1,7 +1,21 @@
-import React from 'react';
-import { FloatingNavDemo } from '../demo/page';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { FloatingNavDemo } from '@/components/mainnavbar';
 
 function Setting() {
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure this runs only on the client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    // Avoid rendering components that depend on the window object during SSR
+    return null;
+  }
+
   return (
     <div className="min-h-screen w-full bg-blue-50 p-6">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-8">
