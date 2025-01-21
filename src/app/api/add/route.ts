@@ -1,6 +1,7 @@
 import connectDb from '@/lib/dbconnect';
 import UserModel from '@/models/usermodel';
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 
 console.time('Database Connection');
 connectDb()
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
     // Parse the incoming JSON body
     const body = await request.json();
 
-    const { email, Username, Bio, Gender, DateOfBirth, Location, preferences } = body;
+    const { email, Username, Bio, Gender, DateOfBirth, Location, preferences ,Interests,password} = body;
 
     // Ensure email is provided (required)
     if (!email) {
@@ -32,7 +33,16 @@ export async function POST(request: NextRequest) {
     if (Gender) updateData.gender = Gender;
     if (DateOfBirth) updateData.dateOfBirth = DateOfBirth;
     if (Location) updateData.location = Location;
+    if (Interests) updateData.interests = Interests;
     if (preferences) updateData.preferences = preferences;
+
+    if (password) {
+       // Define salt rounds
+      const hashedPassword = await bcrypt.hash(password, 10); // Hash the password synchronously
+      console.log('Hashed password:', hashedPassword);
+      
+      updateData.password = hashedPassword;
+    }
 
     // Perform the update
     const updatedUser = await UserModel.findOneAndUpdate(
