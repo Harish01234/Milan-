@@ -9,7 +9,6 @@ interface FormData {
   password: string;
   gender: 'Male' | 'Female' | 'Other' | '';
   dateOfBirth: string;
-  
 }
 
 const SignUp = () => {
@@ -19,13 +18,12 @@ const SignUp = () => {
     password: '',
     gender: '',
     dateOfBirth: '',
-   
   });
 
   const [errors, setErrors] = useState<any>({});
   const [isClient, setIsClient] = useState(false);
-  const [loading, setLoading] = useState(false); // Loader state
-  const [popup, setPopup] = useState<{ message: string; type: 'success' | 'error' } | null>(null); // Popup state
+  const [loading, setLoading] = useState(false);
+  const [popup, setPopup] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -52,23 +50,20 @@ const SignUp = () => {
 
   const showPopup = (message: string, type: 'success' | 'error') => {
     setPopup({ message, type });
-    setTimeout(() => setPopup(null), 3000); // Hide popup after 3 seconds
+    setTimeout(() => setPopup(null), 3000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
-      setLoading(true); // Start loader
+      setLoading(true);
       try {
-        // Make API call using axios
         const response = await axios.post('/api/signup', formData);
-
-        // Simulate a successful response
         if (response.status === 200) {
           showPopup('Account created successfully!', 'success');
           if (isClient) {
-            router.push(`/verification/${formData.email}`); // Redirect to verification page after successful signup
+            router.push(`/verification/${formData.email}`);
           }
         } else {
           showPopup('Something went wrong. Please try again.', 'error');
@@ -77,7 +72,7 @@ const SignUp = () => {
         console.error('Error during signup:', error);
         showPopup('Failed to create account. Please try again.', 'error');
       } finally {
-        setLoading(false); // End loader
+        setLoading(false);
       }
     } else {
       setErrors(validationErrors);
@@ -85,14 +80,14 @@ const SignUp = () => {
   };
 
   if (!isClient) {
-    return null; // Optionally render a loader or null until the client-side renders
+    return null;
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-500 to-red-500">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full sm:w-96">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Create Account</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-500 to-red-500 px-4 sm:px-0">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs sm:max-w-md">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-6">Create Account</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username */}
           <div className="relative">
             <input
@@ -184,7 +179,6 @@ const SignUp = () => {
               value={formData.dateOfBirth}
               onChange={handleChange}
               className="peer w-full p-3 border-b-2 border-gray-300 focus:outline-none focus:border-pink-500 text-gray-800 placeholder-transparent"
-              placeholder="Date of Birth"
               required
             />
             <label
@@ -200,7 +194,7 @@ const SignUp = () => {
           <div>
             <button
               type="submit"
-              className="w-full p-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 focus:outline-none"
+              className="w-full py-3 text-lg bg-pink-500 text-white rounded-lg hover:bg-pink-600 focus:outline-none"
             >
               {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
@@ -210,18 +204,20 @@ const SignUp = () => {
           <div className="text-center text-sm text-gray-600">
             Already have an account?{' '}
             <a href="/signin" className="text-pink-500 hover:underline">
-              Login here
+              Sign In
             </a>
           </div>
         </form>
       </div>
 
-      {/* Popup */}
+      {/* Popup Notifications */}
       {popup && (
         <div
-          className={`fixed bottom-5 left-1/2 transform -translate-x-1/2 ${popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white p-4 rounded-md shadow-lg`}
+          className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-4 py-2 rounded shadow-md`}
         >
-          <p>{popup.message}</p>
+          {popup.message}
         </div>
       )}
     </div>
