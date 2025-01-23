@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Mutual match found!',
         userEmails: { userA: userA.email, userB: userB.email }, // Include user emails in response
+        usernames : { userA: userA.username, userB: userB.username },
       });
     }
 
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'User added to matches',
       userEmails: { userA: userA.email, userB: userB.email }, // Include user emails in response
+      usernames : { userA: userA.username, userB: userB.username },
     });
 
   } catch (error) {

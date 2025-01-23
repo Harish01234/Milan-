@@ -23,6 +23,7 @@ const Page = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const [mutualMatchUser, setMutualMatchUser] = useState<any>(null);
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => handleSwipe('left'),
@@ -36,10 +37,10 @@ const Page = () => {
       const newIndex = (currentIndex + 1) % users.length;
 
       // Log details for the swipe
-      logSwipeDetails(direction, loggedInUserEmail, users[newIndex]?.email);
+      logSwipeDetails(direction, loggedInUserEmail, users[currentIndex]?.email);
 
       // Add to matches using API
-      addToMatches(loggedInUserEmail, users[newIndex]?.email, direction);
+      addToMatches(loggedInUserEmail, users[currentIndex]?.email, direction);
 
       setImageLoaded(false);
       setCurrentIndex(newIndex);
@@ -79,6 +80,7 @@ const Page = () => {
         // Show a pop-up if it's a mutual match
         if (response.data.message === 'Mutual match found!') {
           setPopupMessage(response.data.message);
+          setMutualMatchUser(response.data.usernames.userB); // Use usernameB from API response
           setShowPopup(true);
 
           // Automatically hide the pop-up after 3 seconds
@@ -171,14 +173,20 @@ const Page = () => {
         </div>
       </div>
 
-      {/* Pop-up Notification */}
-      {showPopup && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <h2 className="text-lg font-bold text-green-600">🎉 {popupMessage}</h2>
-          </div>
+     {/* Pop-up Notification */}
+{showPopup && (
+  <div className="fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-pink-100 to-lavender-200 flex justify-center items-center">
+    <div className="bg-pink-200 p-6 rounded-lg shadow-lg w-80 text-center">
+      <h2 className="text-lg font-bold text-green-600">🎉 {popupMessage}</h2>
+      {mutualMatchUser && (
+        <div className="mt-4">
+          <p className="mt-2 text-violet-600 font-semibold">{mutualMatchUser}</p>
         </div>
       )}
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
