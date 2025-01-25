@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FloatingNavDemo } from '@/components/mainnavbar';
 import ImageUpload from '@/components/fileupload'; // Assuming the component is located here
+import PostUpload from '@/components/postupload';
 import axios from 'axios';
 
 function Setting() {
@@ -78,6 +79,15 @@ function Setting() {
               </div>
             </div>
 
+             {/* posts section  */}
+
+          <div className="mt-4">
+              <label className="block text-sm font-medium text-pink-600">Post Picture</label>
+              <div className="mt-2">
+                <PostUpload />
+              </div>
+            </div>
+
             {['Username', 'Gender', 'DateOfBirth', 'Bio', 'Location', 'Interests'].map((label) => (
               <div key={label} className="mt-4">
                 <label
@@ -106,6 +116,11 @@ function Setting() {
               </div>
             ))}
           </div>
+
+         
+            
+
+
 
           {/* Preferences Section */}
           <div className="bg-gradient-to-r from-pink-300 via-lavender-300 to-violet-300 p-4 rounded-lg shadow-md">

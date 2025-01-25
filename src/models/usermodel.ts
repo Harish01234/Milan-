@@ -21,8 +21,11 @@ interface UserDocument extends mongoose.Document {
     isActive: boolean;
     expiryDate?: Date;
   };
-  otp?: string; // Field to store OTP
-  otpExpiry?: Date; // Field to store OTP expiry
+  otp?: string;
+  otpExpiry?: Date;
+  
+    postLinks?: string[]; // Array of post-related links
+  
 }
 
 const userSchema = new mongoose.Schema<UserDocument>(
@@ -49,7 +52,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
           },
           maxDistance: { type: Number, required: false },
         },
-        { _id: false } // Prevents an additional _id field for the preferences sub-document
+        { _id: false }
       ),
     },
     profilePicture: { type: String },
@@ -61,6 +64,9 @@ const userSchema = new mongoose.Schema<UserDocument>(
     },
     otp: { type: String },
     otpExpiry: { type: Date },
+  
+      postLinks: { type: [String] }, // Array of strings for storing links
+  
   },
   { timestamps: true }
 );
