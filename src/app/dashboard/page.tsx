@@ -4,6 +4,7 @@ import { FloatingNavDemo } from '@/components/mainnavbar';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import Link from 'next/link';
 
 // Fetch users from API
 const fetchUsers = async (username?: string, email?: string, gender?: string) => {
@@ -125,9 +126,7 @@ const Page = () => {
           <img
             src={currentItem.profilePicture || '/placeholder.png'}
             alt={currentItem.username}
-            className={`w-full h-72 object-cover transition-opacity duration-300 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`w-full h-72 object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
         </div>
@@ -155,6 +154,11 @@ const Page = () => {
               )}
             </ul>
           </div>
+          <Link href={`/profile/${currentItem.email}`}>
+            <button className="mt-4 py-2 px-4 from-pink-500 to-purple-700 bg-gradient-to-br text-sm text-white rounded-lg hover:from-pink-600 hover:to-purple-800">
+              View Profile
+            </button>
+          </Link>
         </div>
 
         <div className="flex justify-between bg-pink-100 p-3">
@@ -173,20 +177,19 @@ const Page = () => {
         </div>
       </div>
 
-     {/* Pop-up Notification */}
-{showPopup && (
-  <div className="fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-pink-100 to-lavender-200 flex justify-center items-center">
-    <div className="bg-pink-200 p-6 rounded-lg shadow-lg w-80 text-center">
-      <h2 className="text-lg font-bold text-green-600">🎉 {popupMessage}</h2>
-      {mutualMatchUser && (
-        <div className="mt-4">
-          <p className="mt-2 text-violet-600 font-semibold">{mutualMatchUser}</p>
+      {/* Pop-up Notification */}
+      {showPopup && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-pink-100 to-lavender-200 flex justify-center items-center">
+          <div className="bg-pink-200 p-6 rounded-lg shadow-lg w-80 text-center">
+            <h2 className="text-lg font-bold text-green-600">🎉 {popupMessage}</h2>
+            {mutualMatchUser && (
+              <div className="mt-4">
+                <p className="mt-2 text-violet-600 font-semibold">{mutualMatchUser}</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
-    </div>
-  </div>
-)}
-
     </div>
   );
 };
