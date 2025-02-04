@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FloatingNavDemo } from '@/components/mainnavbar';
+import {  useRouter } from 'next/navigation'; 
 
 interface UserProfileProps {
   params: Promise<{ email?: string }>;
@@ -14,7 +15,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  localStorage.setItem('upusername', userData?.username || '');
+  localStorage.setItem('recever', userData?.username || '');
+
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -61,8 +64,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
     // Add your chat functionality here
     console.log('Chat button clicked!');
     // Example: Open a chat modal or redirect to a chat page
-    window.location.href = '/chat';
 
+    router.push('/chat');
+    
   };
 
   return (
