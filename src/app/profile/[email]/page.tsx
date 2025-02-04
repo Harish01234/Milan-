@@ -14,6 +14,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  localStorage.setItem('upusername', userData?.username || '');
+
+
   useEffect(() => {
     const fetchParams = async () => {
       const resolvedParams = await params;
@@ -53,6 +56,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
     fetchUserData();
   }, [email]);
 
+  // Function to handle chat button click
+  const handleChatClick = () => {
+    // Add your chat functionality here
+    console.log('Chat button clicked!');
+    // Example: Open a chat modal or redirect to a chat page
+    window.location.href = '/chat';
+
+  };
+
   return (
     <div className="bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 min-h-screen py-10 px-4 sm:px-10">
       {/* Profile Header */}
@@ -80,6 +92,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
                 Premium User
               </p>
             )}
+            {/* Chat Button */}
+            <button
+              onClick={handleChatClick}
+              className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              Chat
+            </button>
           </div>
         </div>
       </div>
@@ -128,8 +147,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ params }) => {
           </div>
         )}
 
-         {/* Floating Navigation */}
-         <div className="mt-8">
+        {/* Floating Navigation */}
+        <div className="mt-8">
           <FloatingNavDemo />
         </div>
       </div>
